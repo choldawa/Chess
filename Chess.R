@@ -23,6 +23,7 @@
 library(pigeon)
 library(rchess)
 library(tidyverse)
+library(bigchess)
 
 
 pgn = system.file("extdata/pgn/kasparov_vs_topalov.pgn", package = "rchess")
@@ -59,6 +60,19 @@ plot(test)
 test$moves()
 stockfish = startStockfish()
 
+engine_path <- "./stockfish-10-64"
+e <- uci_engine(engine_path)
+ep <- uci_position(e, moves = "e2e4")
+eg <- uci_go(e, depth = 10)
+
+require(magrittr)
+ap <- analyze_position(engine_path,san = "e4 e5 Nf3 Nc6 Bb5",depth = 10)
+#ap$bestmove_lan
+ap$bestmove_san
+ap$score
+ap$curpos_san
+ap$bestline_san
+#ap$bestline_lan
 
 #load game from pgn string
 pgn <- "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6
