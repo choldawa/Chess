@@ -1,11 +1,11 @@
 # PseudoCode:
-#   load pgn viarchess system.file?
-# get list of all moves in the game via chss$history()
+#   load pgn via rchess system.file?
+#   get list of all moves in the game via chss$history()
 #   store this as an array? 
-# initialize blank chess game via chss = Chess$new()
+#   initialize blank chess game via chss = Chess$new()
 #   for each move in history:
 #     push move to blank game via chss$move("Nbd7")
-#   get all legal moves from there via chss$moves()
+#     get all legal moves from there via chss$moves()
 #     for each possible in moves:
 #       push possible to hypothetical board via chss$move(possible)
 #       get stockfish eval of that position <----- unsure on this, tbd
