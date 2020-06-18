@@ -16,10 +16,14 @@
 
 #install.packages("rchess")
 #devtools::install_github("hrbrmstr/pigeon")
-install.packages("rlang", dependencies = TRUE) 
+#install.packages("rlang", dependencies = TRUE) 
+#install.packages("remotes")
+#remotes::install_github("oganm/stockfisher")
+#install.packages('subprocess',repos='http://cran.us.r-project.org')
 library(pigeon)
 library(rchess)
 library(tidyverse)
+
 
 pgn = system.file("extdata/pgn/kasparov_vs_topalov.pgn", package = "rchess")
 pgn = readLines(pgn, warn = FALSE)
@@ -48,7 +52,12 @@ chss$undo()
 plot(chss)
 
 
-
+hist = chss$history()
+test = Chess$new()
+test$move(hist[1])
+plot(test)
+test$moves()
+stockfish = startStockfish()
 
 
 #load game from pgn string
