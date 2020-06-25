@@ -34,7 +34,6 @@ chss = Chess$new()
 chss$load_pgn(pgn)
 
 
-
 plot(chss)
 #list of legal moves
 chss$moves()
