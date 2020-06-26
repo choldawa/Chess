@@ -55,7 +55,7 @@ hist = chss$history()
 test = Chess$new()
 test$move(hist[1])
 plot(test)
-test$moves()
+length(test$moves())
 stockfish = startStockfish()
 
 engine_path <- "./stockfish-10-64"
