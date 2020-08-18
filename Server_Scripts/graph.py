@@ -37,6 +37,30 @@ for mainLine in mainlineList:
 if(limit > len(stringList)):
     limit = len(stringList)-1
 
+
+
+def get_counts(moveString, game_file):
+    command = 'grep -I "{}"  {}  | grep -o ".$" | sort | uniq -c'.format(moveString, game_file)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+    output = process.communicate()
+    counts = re.findall('\d+',str(output))
+
+    if('0' in counts[1::2]):
+         countWhite = counts[0::2][counts[1::2].index('0')]
+    else:
+        countTie = 0
+    if('1' in counts[1::2]):
+         countBlack = counts[0::2][counts[1::2].index('1')]
+    else:
+        countTie = 0
+    if('2' in counts[1::2]):
+        countTie = counts[0::2][counts[1::2].index('2')]
+    else:
+        countTie = 0
+
+    count = int(countWhite) + int(countBlack) + int(countTie)
+    return countWhite, countBlack, countTie, count
+
 #start timer
 start = timeit.default_timer()
 
@@ -62,25 +86,7 @@ for string in stringList[:limit]:
 
         #check if fen is new, if yes, and count is high, add new node
             if(currFen not in g.nodes): #only add nodes if the sequence has not yet occured and they are frequent enough
-                command = 'grep -I "{}"  {}  | grep -o ".$" | sort | uniq -c'.format(moveString, game_file)
-                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-                output = process.communicate()
-                counts = re.findall('\d+',str(output))
-
-                if('0' in counts[1::2]):
-                     countWhite = counts[0::2][counts[1::2].index('0')]
-                else:
-                    countTie = 0
-                if('1' in counts[1::2]):
-                     countBlack = counts[0::2][counts[1::2].index('1')]
-                else:
-                    countTie = 0
-                if('2' in counts[1::2]):
-                    countTie = counts[0::2][counts[1::2].index('2')]
-                else:
-                    countTie = 0
-
-                count = int(countWhite) + int(countBlack) + int(countTie)
+                countWhite, countBlack, countTie, count = get_counts(moveString, game_file)
                 print(move, count)
             #if count is sufficient, add to graph
                 if(count >=X):
@@ -104,26 +110,7 @@ for string in stringList[:limit]:
                     break
         #if fen is not new, check if movestring in list of movestrings, if not, add it and add count
             elif(parentFen not in nx.get_node_attributes(g, 'movelistCount')[currFen]):
-                command = 'grep -I "{}"  {}  | grep -o ".$" | sort | uniq -c'.format(moveString, game_file)
-                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-                output = process.communicate()
-                counts = re.findall('\d+',str(output))
-
-                if('0' in counts[1::2]):
-                     countWhite = counts[0::2][counts[1::2].index('0')]
-                else:
-                    countTie = 0
-                if('1' in counts[1::2]):
-                     countBlack = counts[0::2][counts[1::2].index('1')]
-                else:
-                    countTie = 0
-                if('2' in counts[1::2]):
-                    countTie = counts[0::2][counts[1::2].index('2')]
-                else:
-                    countTie = 0
-
-                count = int(countWhite) + int(countBlack) + int(countTie)
-
+                countWhite, countBlack, countTie, count = get_counts(moveString, game_file)
                 if(count>=X):
                     print(move, "count>X")
             # elif(count>=X):
