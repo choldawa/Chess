@@ -1,3 +1,5 @@
+#This improves on "chessGraph.py" by moving the grep calls inside the conditions
+
 import sys
 import networkx as nx
 import matplotlib as plt
@@ -13,8 +15,6 @@ import chess
 import chess.engine
 engine = chess.engine.SimpleEngine.popen_uci("/home/choldawa/stockfish-10-linux/Linux/stockfish_10_x64")
 
-#stockfish = Stockfish("/home/choldawa/stockfish-10-64")
-# stockfish = Stockfish("/home/choldawa/stockfish-10-linux/Linux/stockfish_10_x64")
 
 
 game_file = sys.argv[1] #which file to read games from
@@ -27,12 +27,13 @@ with open(game_file, "r") as file_in:
     mainlineList = []
     for line in file_in:
         mainlineList.append(line)
+
 #extract each string of moves
 stringList = []
 for mainLine in mainlineList:
     stringList.append(mainLine.split())
 
-
+#Either run until limit is reached, or until end of games in file
 if(limit > len(stringList)):
     limit = len(stringList)-1
 
@@ -59,26 +60,6 @@ for string in stringList[:limit]:
             board.push_san(move) #push the move to the board
             currFen = board.fen() #get the fen from the board
 
-        #run grep command to get counts and outcomes
-            # command = 'grep -I "{}"  {}  | grep -o ".$" | sort | uniq -c'.format(moveString, game_file)
-            # process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-            # output = process.communicate()
-            # counts = re.findall('\d+',str(output))
-            #
-            # if('0' in counts[1::2]):
-            #      countWhite = counts[0::2][counts[1::2].index('0')]
-            # else:
-            #     countTie = 0
-            # if('1' in counts[1::2]):
-            #      countBlack = counts[0::2][counts[1::2].index('1')]
-            # else:
-            #     countTie = 0
-            # if('2' in counts[1::2]):
-            #     countTie = counts[0::2][counts[1::2].index('2')]
-            # else:
-            #     countTie = 0
-            #
-            # count = int(countWhite) + int(countBlack) + int(countTie)
         #check if fen is new, if yes, and count is high, add new node
             if(currFen not in g.nodes): #only add nodes if the sequence has not yet occured and they are frequent enough
                 command = 'grep -I "{}"  {}  | grep -o ".$" | sort | uniq -c'.format(moveString, game_file)
@@ -101,6 +82,7 @@ for string in stringList[:limit]:
 
                 count = int(countWhite) + int(countBlack) + int(countTie)
                 print(move, count)
+            #if count is sufficient, add to graph
                 if(count >=X):
                     print(move, "count>X")
                     board = chess.Board(currFen)
@@ -118,12 +100,10 @@ for string in stringList[:limit]:
                               # movelist = [[moveString]]) #make a list of moveStrings
                     g.add_edge(parentFen, currFen)
                     parentFen = currFen
-                    print(move, "added")
                 else:
                     break
         #if fen is not new, check if movestring in list of movestrings, if not, add it and add count
             elif(parentFen not in nx.get_node_attributes(g, 'movelistCount')[currFen]):
-                print(move, "ELIF")
                 command = 'grep -I "{}"  {}  | grep -o ".$" | sort | uniq -c'.format(moveString, game_file)
                 process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
                 output = process.communicate()
@@ -143,17 +123,13 @@ for string in stringList[:limit]:
                     countTie = 0
 
                 count = int(countWhite) + int(countBlack) + int(countTie)
-                print(move,count)
+
                 if(count>=X):
                     print(move, "count>X")
             # elif(count>=X):
             #     if(parentFen not in nx.get_node_attributes(g, 'movelistCount')[currFen]):
                     #nx.get_node_attributes(g, 'movelist')[currFen] = nx.get_node_attributes(g, 'movelist')[currFen].append([moveString])
                     nx.get_node_attributes(g, 'movelistCount')[currFen][parentFen] = count
-#                     nx.get_node_attributes(g, 'movelistWhiteWins')[currFen][parentFen] = countWhite
-#                     nx.get_node_attributes(g, 'movelistBlackWins')[currFen][parentFen] = countBlack
-#                     nx.get_node_attributes(g, 'movelistTie')[currFen][parentFen] = countTie
-#                     g.nodes[currFen]['count'] = nx.get_node_attributes(g, 'count')[currFen]+count
                     g.nodes[currFen]['whiteWins'] = nx.get_node_attributes(g, 'whiteWins')[currFen]+countWhite
                     g.nodes[currFen]['blackWins'] = nx.get_node_attributes(g, 'blackWins')[currFen]+countBlack
                     g.nodes[currFen]['tie'] = nx.get_node_attributes(g, 'tie')[currFen]+countTie
