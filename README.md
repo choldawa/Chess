@@ -1,4 +1,7 @@
 # Chess [repo under construction]
+
+Read a layperson summary on [LinkedIn](https://www.linkedin.com/pulse/what-can-1-billion-chess-games-tell-us-risk-taking-cameron-holdaway/?trackingId=X%2F6V2%2FM19vFuNSoAmydQTg%3D%3D)
+
 #### What can we learn about risk-taking behavior from 1.4 billion chess games?
 
 
